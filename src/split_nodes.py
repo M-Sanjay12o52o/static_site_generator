@@ -2,12 +2,42 @@ from textnode import TextNode, TextType
 
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    new_nodes = []
+
+    if not delimiter:
+        new_nodes.extend(old_nodes)
+        return new_nodes
+
+    for old_node in old_nodes:
+        if old_node.text_type != TextType.TEXT:
+            new_nodes.append(old_node)
+            continue
+        split_nodes = []
+        sections = old_node.text.split(delimiter)
+        if len(sections) % 2 == 0:
+            new_nodes.extend(old_nodes)
+            continue
+            # raise ValueError("invalid markdown, formatted section not closed")
+        for i in range(len(sections)):
+            if sections[i] == "":
+                continue
+            if i % 2 == 0:
+                split_nodes.append(TextNode(sections[i], TextType.TEXT))
+            else:
+                split_nodes.append(TextNode(sections[i], text_type))
+        new_nodes.extend(split_nodes)
+    return new_nodes
+
+
+"""
+def split_nodes_delimiter(old_nodes, delimiter, text_type):
     result_list = []
 
     if not delimiter:
         return old_nodes
 
     for item in old_nodes:
+        print(f"Processing node: {item}")
         text = item.text
         parts = text.split(delimiter)
 
@@ -18,49 +48,10 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         for i, part in enumerate(parts):
             if i % 2 == 0:
                 if part:
-                    result_list.append(TextNode(part, item.text_type))
+                    result_list.append(TextNode(part, TextType.TEXT))
             else:
                 if part:
                     result_list.append(TextNode(part, text_type))
 
     return result_list
-
-
-# node = TextNode("This is text with a `code block` word", TextType.TEXT)
-# new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
-
-# print("new_nodes: ", new_nodes)
-
-
-node1 = TextNode("This is just one long string with no text_type in it", TextType.TEXT)
-new_nodes1 = split_nodes_delimiter([node1], "", TextType.TEXT)
-
-# print("new_nodes1: ", new_nodes1)
-
-# node2 = TextNode("**THIS IS AN EXAMPLE** of text_type in the beginning", TextType.TEXT)
-# new_nodes2 = split_nodes_delimiter([node2], "**", TextType.BOLD)
-
-# node3 = TextNode("This is an example with delimiter in the **END**", TextType.TEXT)
-# new_nodes3 = split_nodes_delimiter([node3], "**", TextType.BOLD)
-
-# one that doesn't contain any delimiter
-#   Ex: "This is just one long string with no text_type in it"
-# one that contains the delimiter at the beginning
-#   Ex: "**THIS IS AN EXAMPLE** of text_type in the beginning"
-# one where the delimiter string is the last string
-#   Ex: "This is an example with delimiter in the **END**"
-# delimiter in the middle of the string
-#  Ex: "This is text with a `code block` word"
-
-# Question:
-# How does the if else statements work with
-# the above different scenarios
-
-
-"""
-[
-    TextNode("This is text with a ", TextType.TEXT),
-    TextNode("code block", TextType.CODE),
-    TextNode(" word", TextType.TEXT),
-]
 """

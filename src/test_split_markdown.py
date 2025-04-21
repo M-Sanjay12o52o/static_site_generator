@@ -49,24 +49,31 @@ class TestSplitNode(unittest.TestCase):
 
         self.assertEqual(expected_result, new_nodes)
 
-    def test_split_images_link_mixed(self):
+    def test_split_images_link_mixed_image(self):
         node = TextNode(
             "![pic](https://img.com) and [site](https://site.com)", TextType.TEXT
         )
 
         expected_image_result = [
-            TextNode("", TextType.TEXT),
             TextNode("pic", TextType.IMAGE, "https://img.com"),
             TextNode(" and [site](https://site.com)", TextType.TEXT),
         ]
+
+        img_nodes = split_nodes_image([node])
+        self.assertEqual(img_nodes, expected_image_result)
+
+    def test_split_images_link_mixed_link(self):
+        node = TextNode(
+            "![pic](https://img.com) and [site](https://site.com)", TextType.TEXT
+        )
 
         expected_link_result = [
             TextNode("![pic](https://img.com) and ", TextType.TEXT),
             TextNode("site", TextType.LINK, "https://site.com"),
         ]
 
-        self.assertEqual(split_nodes_image([node]), expected_image_result)
-        self.assertEqual(split_nodes_link([node]), expected_link_result)
+        link_nodes = split_nodes_link([node])
+        self.assertEqual(link_nodes, expected_link_result)
 
     def test_split_broken_syntax(self):
         node = TextNode("[broken](missing end", TextType.TEXT)
