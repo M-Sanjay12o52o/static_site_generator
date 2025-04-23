@@ -17,14 +17,9 @@ def generate_page(from_path, template_path, dest_path):
     node = markdown_to_html_node(markdown_content)
     html = node.to_html()
 
-    print("html: ", html)
-
     title = extract_title(markdown_content)
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html)
-
-    print("EXTRACTED TITLE:", title)
-    print("EXTRACTED template:", template)
 
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
